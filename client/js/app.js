@@ -62,6 +62,9 @@ videoMgr = {
     // whether a video that's been started has been paused
     paused: false,
 
+    // whether user is in the middle of seeking
+    seeking: false,
+
     // state to track whether user typed 'reset' to reset all client and server state for new video session
     backupResetState: 0,
 
@@ -174,7 +177,8 @@ videoMgr = {
 	    $('#seekTo').slider({
 	        max: player.getDuration(),
 		formater: function(val) { return Math.floor(val / 60) + ':' + Math.floor(val % 60); }
-	    }).on('slideStop', function(event) { videoMgr.seekVideo(event.value); });
+	    }).on('slideStart', function(event) { videoMgr.seeking = true; })
+              .on('slideStop', function(event) { videoMgr.seekVideo(event.value); });
 	}
     },
 
@@ -229,7 +233,9 @@ videoMgr = {
 		var now = player.getCurrentTime();
 		syncMgr.broadcastSyncVideo(now);
 		// synchronize with progress slider
-		$('#seekTo').slider('setValue', now);
+		if (!videoMgr.seeking) {
+		    $('#seekTo').slider('setValue', now);
+		}
 	    }, 1000);
 	    // only let master reset with button (others can use backup keyboard method)
 	    $('#reset').show();
@@ -303,6 +309,7 @@ videoMgr = {
     seekVideo: function(time) {
 	player.play(time);
 	syncMgr.broadcastSyncVideo(time);
+	videoMgr.seeking = false;
     },
 
     // synchronize with master 

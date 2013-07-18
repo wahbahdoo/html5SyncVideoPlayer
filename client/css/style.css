@@ -49,11 +49,11 @@ html, body {
 }
 
 #pause {
+    margin-left: 20px !important;
     color: #FFC87C !important;
 }
 
 #videoInfo {
-r    margin-left: 10px;
     text-decoration: none;
 }
 
@@ -70,6 +70,7 @@ r    margin-left: 10px;
     white-space: pre;
     max-width: none;
     text-align: left;
+    padding-right: 15px;
 }
 
 :hover {
