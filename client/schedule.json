@@ -10,13 +10,42 @@
     },
 
     {
-        "date": "Wed Jul 17 2013",
 	"source": "YouTube",
 	"title": "Panel on Web Performance",
 	"speaker": "Shane O'Sullivan, Facebook; Rowan Beenje, FT Labs; Pavel Feldman, Google; Chris Lord, Mozilla",
 	"venue": "EDGE Conference (February 2013)",
 	"videoId": "3-WYu_p5rdU",
 	"url": "http://www.youtube.com/watch?v=3-WYu_p5rdU"
+    },
+
+    {
+        "date": "Thu Jul 18 2013",
+	"source": "YouTube",
+	"title": "Panel on Privileged Access",
+	"speaker": "Brian Leroux, PhoneGap; Diana Cheng, Vodafone; Paul Kinlan, Google; Petro Soininen, Nokia",
+	"venue": "EDGE Conference (February 2013)",
+	"videoId": "ytJKdipILiU",
+	"url": "http://www.youtube.com/watch?v=ytJKdipILiU"
+    },
+
+    {
+	"source": "YouTube",
+	"title": "HTML5 Lessons from LinkedIn using Node.js",
+	"speaker": "Kiran Prasad, LinkedIn",
+	"venue": "DevCon5 (April 2012)",
+	"videoId": "hMd45Ij2DYQ",
+	"start": 9.5,
+	"url": "http://www.youtube.com/watch?v=hMd45Ij2DYQ#t=9.5s"
+    },
+
+    {
+	"source": "YouTube",
+	"title": "Web Components: A Tectonic Shift for Web Development",
+	"speaker": "Eric Bidelman, Google",
+	"venue": "Google I/O (May 2013)",
+	"videoId": "fqULJBBEVQE",
+	"url": "https://www.youtube.com/watch?v=fqULJBBEVQE"
     }
+
 
 ]
