@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<head>
+
+    <title>JavaScript Brown Bag </title>
+
+    <!-- stylesheets -->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="vendor/font-awesome/css/font-awesome.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <!-- scripts -->
+    <script type="text/javascript" src="vendor/jquery/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="vendor/underscore/underscore-min.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="vendor/yepnope/yepnope.1.5.4-min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    
+</head>
+
+<body>
+
+    <!-- header bar -->
+    <div class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar-inner">
+            <div class="container">
+	        <a class="brand" href="#">JavaScript Reading Group</a>
+		<!-- menu controls -->
+		<div id="menu">
+		    <!-- widget to select video to broadcast -->
+		    <ul class="nav">
+		        <li id="videoSelect" class="dropdown">
+		            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Videos <b class="caret"></b> </a>
+		            <ul id="videoList" class="dropdown-menu" role="menu">
+			        <!-- populated dynamically from #videoListTmpl -->
+			    </ul>
+		        </li>
+  	            </ul>
+		    <!-- buttons to control video -->
+		    <div id="videoControls" class="navbar-btn pull-right" style="display:none">
+		        <a id="videoInfo" href="#" rel="tooltip"><i id="info" class="icon-info-sign"></i></a>
+		        <i id="reset" class="icon-repeat" style="display:none"></i>
+		        <i id="pause" class="icon-pause"></i>
+		    </div>
+	        </div>
+		<!-- alternate warning message to display instead of menu controls when server becomes unavailable -->
+	        <div id="menuDisabled" class="navbar-btn pull-right" style="display:none">
+		    <i id="disconnectIcon" class="icon-exclamation-sign"></i>
+		    <span id="disconnectMsg">server disconnected</span>
+		</div>
+	    </div>
+	</div>
+    </div>
+
+    <!-- placeholder for video -->
+    <div id="video"><br><br>Note that any video you select above will be broadcast to the entire group...</div>
+
+    <!-- overlay to block clicks from the video to limit user interaction to custom controls -->
+    <div id="overlay"></div>
+
+    <!-- dialog to be displayed when video is paused -->
+    <div id="resumeDialog" class="modal hide" tabindex="-1" role="dialog">
+        <div class="modal-body">
+	    <p>Pausing video for discussion…</p>
+	</div>
+	<div class="modal-footer">
+	    <!-- controls to rewind or resume in place -->
+	    <button id="rewind" class="btn">Rewind 30 Sec</button>
+	    <button id="resume" class="btn btn-primary">Resume Video</button>
+	</div>
+    </div>
+
+    <!-- template for dynamically populating list of available videos -->
+    <script type="text/html" id="videoListTmpl">
+        <% _.each(videosForToday, function(video) { %>
+            <li><a tabindex="-1" href="#"><%= video.title %></a></li>
+        <% }); %>
+        <li class="divider"></li>
+        <% _.each(videos, function(video) { %>
+            <li><a tabindex="-1" href="#"><%= video.title %></a></li>
+        <% }); %>
+    </script>
+
+    <!-- template for dynamically populating the info for the selected video -->
+    <script type="text/html" id="videoInfoTmpl">
+        <%= video.title %>
+        <%= video.speaker %>
+        <%= video.venue %>
+        <%= video.url %>
+    </script>
+
+</body>
+
+</html>
