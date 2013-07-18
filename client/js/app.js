@@ -165,6 +165,19 @@ videoMgr = {
 	$('#videoSelect').hide();
     },
 
+    // enable user control over video play
+    enableControls: function() {
+	// display buttons & slider
+	$('#videoControls').show(); 
+	// if master, initialize progress/seekTo slider
+	if (videoMgr.master) {
+	    $('#seekTo').slider({
+	        max: player.getDuration(),
+		formater: function(val) { return Math.floor(val / 60) + ':' + Math.floor(val % 60); }
+	    }).on('slideStop', function(event) { videoMgr.seekVideo(event.value); });
+	}
+    },
+
     // create tooltip over info button to display info about the selected video
     displayInfo: function(video) {
 	var tmpl = _.template($('#videoInfoTmpl').html());
@@ -213,12 +226,18 @@ videoMgr = {
 	// if master, broadcast current video position every second to enable others to sync
 	if (videoMgr.master) {
 	    videoMgr.setSyncRefRef = setInterval(function() {
-		syncMgr.broadcastSyncVideo(player.getCurrentTime());
+		var now = player.getCurrentTime();
+		syncMgr.broadcastSyncVideo(now);
+		// synchronize with progress slider
+		$('#seekTo').slider('setValue', now);
 	    }, 1000);
+	    // only let master reset with button (others can use backup keyboard method)
 	    $('#reset').show();
+	    // only let master seek to different position
+	    $('#seekTo').show();
 	}
 	// enable user controls over video 
-	$('#videoControls').show(); 
+	videoMgr.enableControls();
     },
 
     // stop video
@@ -280,9 +299,16 @@ videoMgr = {
 	syncMgr.broadcastResume(player.getCurrentTime() - 30);
     },
 
+    // seek to new position
+    seekVideo: function(time) {
+	player.play(time);
+	syncMgr.broadcastSyncVideo(time);
+    },
+
     // synchronize with master 
     syncVideo: function(time) {
-	player.sync(time);
+	var now = player.sync(time);
+	// synchronize with progress slider
     }
 
 };

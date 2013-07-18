@@ -79,18 +79,27 @@ player = {
 	player.obj.stopVideo();
     },
 
+    // get total duration of video
+    getDuration: function() {
+	return player.obj.getDuration();
+    },
+
     // get current video position (in seconds from beginning)
     getCurrentTime: function() {
 	return player.obj.getCurrentTime();
     },
 
-    // synchronize with master
+    // synchronize with master, and return current time
     sync: function(time) {
+	var now = player.obj.getCurrentTime();
 	// only adjust when off by 1/2 second or more (otherwise seek op expensive and not worth it)
-	if (Math.abs(player.obj.getCurrentTime() - time) >= 0.5) {
+	if (Math.abs(now - time) >= 0.5) {
 	    // heuristic: add an additional second to account for seek op 
 	    console.log('sync video to ' + (time + 1));
 	    player.obj.seekTo(time + 1);
+	    return time + 1;
+	} else {
+	    return now;
 	}
      },
 
