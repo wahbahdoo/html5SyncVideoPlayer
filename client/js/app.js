@@ -62,6 +62,9 @@ videoMgr = {
     // whether a video that's been started has been paused
     paused: false,
 
+    // whether seeker has been initialized
+    seeker: false,
+
     // whether user is in the middle of seeking
     seeking: false,
 
@@ -77,6 +80,8 @@ videoMgr = {
 	$('#resume').on('click', function() { syncMgr.broadcastResume(); });
 	$('#rewind').on('click', videoMgr.rewindVideo);
 	$('#reset').on('click', syncMgr.broadcastReset);
+	$('#unmuted').on('click', videoMgr.muteVideo);
+	$('#muted').on('click', videoMgr.unmuteVideo);
 	// initialize keyboard event listener to reset when user types 'reset'
 	videoMgr.initBackupReset();
 	// start the video after the video has been loaded and the player is ready
@@ -174,11 +179,30 @@ videoMgr = {
 	$('#videoControls').show(); 
 	// if master, initialize progress/seekTo slider
 	if (videoMgr.master) {
-	    $('#seekTo').slider({
-	        max: player.getDuration(),
-		formater: function(val) { return Math.floor(val / 60) + ':' + Math.floor(val % 60); }
-	    }).on('slideStart', function(event) { videoMgr.seeking = true; })
-              .on('slideStop', function(event) { videoMgr.seekVideo(event.value); });
+	    // hacky way of polling for duration when metadata ready
+	    var getDuration = function() {
+		var duration = player.getDuration();
+		console.log('duration: ' + duration); 
+		if (duration == 0) {
+		    setTimeout(getDuration, 500);
+		} else {
+		    $('#seekTo').show();
+		    $('#seekTo').slider({
+		        max: duration,
+			formater: function(val) { 
+			    var min = Math.floor(val / 60);
+			    if (min < 10) { min = '0' + min; }
+			    var sec = Math.floor(val % 60);
+			    if (sec < 10) { sec = '0' + sec; }
+			    return min + ':' + sec; 
+			}
+		    }).on('slideStart', function(event) { videoMgr.seeking = true; })
+		      .on('slideStop', function(event) { videoMgr.seekVideo(event.value); })
+		    videoMgr.seeker = true;
+
+		}
+	    };
+	    getDuration();
 	}
     },
 
@@ -215,12 +239,10 @@ videoMgr = {
     startVideo: function() {
 	// track video playing state
 	videoMgr.started = true;
-	// mute all other players
-	if (!videoMgr.master) {
-	    player.mute();
-	}
 	// play video
 	videoMgr.playVideo();
+	// warn to mute phones
+	videoMgr.mutePhones();
     },
 
     // play video (starting at given time, if any)
@@ -233,14 +255,12 @@ videoMgr = {
 		var now = player.getCurrentTime();
 		syncMgr.broadcastSyncVideo(now);
 		// synchronize with progress slider
-		if (!videoMgr.seeking) {
+		if (videoMgr.seeker && !videoMgr.seeking) {
 		    $('#seekTo').slider('setValue', now);
 		}
 	    }, 1000);
 	    // only let master reset with button (others can use backup keyboard method)
 	    $('#reset').show();
-	    // only let master seek to different position
-	    $('#seekTo').show();
 	}
 	// enable user controls over video 
 	videoMgr.enableControls();
@@ -295,6 +315,8 @@ videoMgr = {
 	    if (time) { console.log('resuming video at ' + time); }
 	    // resume video
 	    videoMgr.playVideo(time);
+	    // warn to mute phones
+	    videoMgr.mutePhones();
 	} else {
 	    $(document).on('videoReady', _.bind(videoMgr.playVideo, time));
 	}
@@ -315,7 +337,27 @@ videoMgr = {
     // synchronize with master 
     syncVideo: function(time) {
 	var now = player.sync(time);
-	// synchronize with progress slider
+    },
+
+    // mute video 
+    muteVideo: function() {
+	player.mute();
+	$('#unmuted').hide();
+	$('#muted').show();
+	$('#unmuteWarning').hide();
+    },
+
+    // unmute video 
+    unmuteVideo: function() {
+	player.unmute();
+	$('#muted').hide();
+	$('#unmuted').show();
+	videoMgr.mutePhones();
+    },
+
+    // mute phones
+    mutePhones: function() {
+	$('#unmuteWarning').show().delay(3000).fadeOut();
     }
 
 };

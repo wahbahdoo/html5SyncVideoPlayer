@@ -9,6 +9,7 @@ player = {
     // parameters to pass to youtube api to create player
     params: {
 	playerVars: {
+	    html5: 1,
 	    origin: window.location.protocol + '//' + window.location.host,
 	    enablejsapi: 1,
 	    controls: 0,
@@ -22,6 +23,9 @@ player = {
 	    'onStateChange': onPlayerStateChange
 	}
     },
+
+    // track playback rate
+    rate: 1,
 
     // track whether video has been selected to finish initializing player
     initialized: $.Deferred(),
@@ -44,11 +48,6 @@ player = {
 	player.resize();
 	// resize player whenever browser window is resized
 	$(window).on('resize', player.resize);
-    },
-
-    // mute video player
-    mute: function() {
-	player.obj.mute();
     },
 
     // play video (start at given time, if any)
@@ -79,6 +78,58 @@ player = {
 	player.obj.stopVideo();
     },
 
+    // synchronize with master, and return current time
+    sync: function(time) {
+	var now = player.obj.getCurrentTime();
+	// seek if way off
+	if ((now - time) > 3) {
+	    console.log('seek to time ' + time);
+	    player.obj.seekTo(time + 1);
+	}
+	// only adjust when off by 0.5 second or more 
+	if ((now - time) >= 0.5) {
+	    if (player.rate != 'paused') {
+		console.log('slow down');
+		player.obj.pauseVideo();
+	    } else {
+		console.log('keep slowing down');
+	    }
+	} else if ((time - now) >= 0.5) {
+	    if (player.rate != 'sped') {
+		console.log('speed up');
+		if (player.rate == 'paused') {
+		    player.obj.playVideo();
+		}
+		player.obj.setPlaybackRate(1.5);
+		player.rate = 'sped';
+	    } else {
+		console.log('keep speeding down');
+	    }
+	} else {
+	    if (player.rate != 'normal') {
+		console.log('back to normal');
+		if (player.rate == 'paused') {
+		    player.obj.playVideo();
+		} else {
+		    player.obj.setPlaybackRate(1);
+		}
+		player.rate = 'normal';
+	    } else {
+		console.log('keep normal');
+	    }
+	}
+     },
+
+    // mute video player
+    mute: function() {
+	player.obj.mute();
+    },
+
+    // unmute video player
+    unmute: function() {
+	player.obj.unMute();
+    },
+
     // get total duration of video
     getDuration: function() {
 	return player.obj.getDuration();
@@ -88,20 +139,6 @@ player = {
     getCurrentTime: function() {
 	return player.obj.getCurrentTime();
     },
-
-    // synchronize with master, and return current time
-    sync: function(time) {
-	var now = player.obj.getCurrentTime();
-	// only adjust when off by 1/2 second or more (otherwise seek op expensive and not worth it)
-	if (Math.abs(now - time) >= 0.5) {
-	    // heuristic: add an additional second to account for seek op 
-	    console.log('sync video to ' + (time + 1));
-	    player.obj.seekTo(time + 1);
-	    return time + 1;
-	} else {
-	    return now;
-	}
-     },
 
     // resize player to fill most of available window real estate
     resize: function() {

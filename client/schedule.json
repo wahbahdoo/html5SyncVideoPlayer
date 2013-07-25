@@ -19,7 +19,6 @@
     },
 
     {
-        "date": "Thu Jul 18 2013",
 	"source": "YouTube",
 	"title": "Panel on Privileged Access",
 	"speaker": "Brian Leroux, PhoneGap; Diana Cheng, Vodafone; Paul Kinlan, Google; Petro Soininen, Nokia",
@@ -39,6 +38,7 @@
     },
 
     {
+        "date": "Thu Jul 25 2013",
 	"source": "YouTube",
 	"title": "Web Components: A Tectonic Shift for Web Development",
 	"speaker": "Eric Bidelman, Google",

@@ -2,8 +2,18 @@ html, body {
     background: black;
     width: 100%;
     height: 100%;
-    overflow-y:hidden;
-    overflow-x:hidden;
+}
+
+#unmuteWarning {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    text-align: center;
+    z-index: 11;
+}
+
+.slider input {
+    opacity: 0;
 }
 
 #video {
@@ -51,6 +61,10 @@ html, body {
 #pause {
     margin-left: 20px !important;
     color: #FFC87C !important;
+}
+
+#muted {
+    padding-right: 10px;
 }
 
 #videoInfo {
